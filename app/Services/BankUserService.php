@@ -8,6 +8,7 @@ use App\Models\User;
 
 class BankUserService
 {
+    
     public function getAllUsers()
     {
         return User::where('role', 'member')->with('accounts')->get();

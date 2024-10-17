@@ -44,6 +44,15 @@ class AdminManageUsersController extends Controller
         return view('admin.users.show', compact('user', 'accounts'));
     }
 
+    
+    public function showAccount($userId, $accountId)
+    {
+        $account = Account::with(['user', 'accountType', 'transactions'])->findOrFail($accountId);
+        return view('admin.users.show_account', compact('account'));
+    }
+
+
+
     public function createAccount($userId)
     {
         $user = $this->bankUserService->getUserById($userId);
@@ -69,11 +78,6 @@ class AdminManageUsersController extends Controller
     }
 
 
-    public function showAccount($userId, $accountId)
-    {
-        $account = Account::with(['user', 'accountType', 'transactions'])->findOrFail($accountId);
-        return view('admin.users.show_account', compact('account'));
-    }
 
 
 
