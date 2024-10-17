@@ -4,6 +4,7 @@
 
 @section('admin')
     <div class="container py-4">
+        <<x-alert-info/>
         <!-- Credit Card Style Account Details -->
         <div class="row mb-4">
             <div class="col-lg-8 mx-auto">
@@ -44,13 +45,14 @@
                     <div class="card-body p-4">
                         <form action="{{ route('admin.users.credit_account', [$account->user->id, $account->id]) }}" method="POST">
                             @csrf
+                            <input type="hidden" name="transaction_type" value="credit">
                             <div class="form-group mb-3">
                                 <label for="credit_amount" class="form-label">Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">{{ $account->currency->symbol }}</span>
                                     <input type="number" step="0.01" min="0.01"
                                         class="form-control @error('amount') is-invalid @enderror" id="credit_amount"
-                                        name="amount" required>
+                                        name="amount" >
                                     @error('amount')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -59,7 +61,7 @@
                             <div class="form-group mb-3">
                                 <label for="credit_description" class="form-label">Description</label>
                                 <input type="text" class="form-control @error('description') is-invalid @enderror"
-                                    id="credit_description" name="description" required>
+                                    id="credit_description" name="description" >
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -78,13 +80,14 @@
                     <div class="card-body p-4">
                         <form action="{{ route('admin.users.debit_account', [$account->user->id, $account->id]) }}" method="POST">
                             @csrf
+                            <input type="hidden" name="transaction_type" value="credit">
                             <div class="form-group mb-3">
                                 <label for="debit_amount" class="form-label">Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">{{ $account->currency->symbol }}</span>
                                     <input type="number" step="0.01" min="0.01"
                                         class="form-control @error('amount') is-invalid @enderror" id="debit_amount"
-                                        name="amount" required>
+                                        name="amount" >
                                     @error('amount')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -93,7 +96,7 @@
                             <div class="form-group mb-3">
                                 <label for="debit_description" class="form-label">Description</label>
                                 <input type="text" class="form-control @error('description') is-invalid @enderror"
-                                    id="debit_description" name="description" required>
+                                    id="debit_description" name="description" >
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

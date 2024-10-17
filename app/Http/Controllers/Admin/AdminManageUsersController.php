@@ -76,62 +76,10 @@ class AdminManageUsersController extends Controller
     }
 
 
-    // public function creditAccount(Request $request, $userId, $accountId)
-    // {
-    //     $request->validate([
-    //         'amount' => 'required|numeric|min:0.01',
-    //         'description' => 'required|string|max:255',
-    //     ]);
-
-    //     $account = Account::findOrFail($accountId);
-
-    //     // Verify this account belongs to the specified user
-    //     if ($account->user_id != $userId) {
-    //         return redirect()->back()->with('error', 'Invalid account access');
-    //     }
-
-    //     $result = app(BankTransactionService::class)->processTransaction($account, [
-    //         'transaction_type' => 'credit',
-    //         'amount' => $request->amount,
-    //         'description' => $request->description ?? 'Admin credit'
-    //     ]);
-
-    //     if ($result['success']) {
-    //         return redirect()->back()->with('success', $result['message']);
-    //     }
-
-    //     return redirect()->back()->with('error', $result['message']);
-    // }
-
-    // public function debitAccount(Request $request, $userId, $accountId)
-    // {
-    //     $request->validate([
-    //         'amount' => 'required|numeric|min:0.01',
-    //         'description' => 'required|string|max:255',
-    //     ]);
-
-    //     $account = Account::findOrFail($accountId);
-
-    //     // Verify this account belongs to the specified user
-    //     if ($account->user_id != $userId) {
-    //         return redirect()->back()->with('error', 'Invalid account access');
-    //     }
-
-    //     $result = app(BankTransactionService::class)->processTransaction($account, [
-    //         'transaction_type' => 'debit',
-    //         'amount' => $request->amount,
-    //         'description' => $request->description
-    //     ]);
-
-    //     if ($result['success']) {
-    //         return redirect()->back()->with('success', $result['message']);
-    //     }
-
-    //     return redirect()->back()->with('error', $result['message']);
-    // }
 
     public function creditAccount(TransactionRequest $request, $userId, $accountId)
     {
+        // dd($request->all());
         $account = Account::findOrFail($accountId);
 
         // Verify this account belongs to the specified user

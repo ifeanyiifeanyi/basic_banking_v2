@@ -96,7 +96,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
         Route::get('user/{user}/details', 'show')->name('admin.users.show');
         Route::get('user/{user}/create_account', 'createAccount')->name('admin.users.create_account');
         Route::post('user/{user}/create_account_number', 'storeAccount')->name('admin.users.store_account');
-        Route::get('account-details/{user}/{account}', 'showAccount')->name('admin.users.show_account');
+        Route::get('account-details/user/{user}/account/{account}', 'showAccount')->name('admin.users.show_account');
 
 
         Route::post('/users/{userId}/accounts/{accountId}/credit', 'creditAccount')->name('admin.users.credit_account');
