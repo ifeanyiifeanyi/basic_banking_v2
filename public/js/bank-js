@@ -1,0 +1,93 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('requirements-container');
+    const addButton = document.getElementById('add-requirement');
+
+    if (addButton) {
+        addButton.addEventListener('click', function() {
+            const index = container.children.length;
+            addRequirementForm(index);
+        });
+    }
+
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-requirement')) {
+            e.target.closest('.requirement-form').remove();
+            updateRequirementIndices();
+        }
+    });
+
+    function addRequirementForm(index) {
+        const template = document.querySelector('.requirement-form').cloneNode(true);
+
+        // Update all input names with the new index
+        template.querySelectorAll('input, select, textarea').forEach(input => {
+            const name = input.getAttribute('name');
+            if (name) {
+                input.setAttribute('name', name.replace(/\[\d+\]/, `[${index}]`));
+            }
+        });
+
+        // Clear all input values
+        template.querySelectorAll('input[type="text"], textarea').forEach(input => {
+            input.value = '';
+        });
+        template.querySelectorAll('select').forEach(select => {
+            select.selectedIndex = 0;
+        });
+        template.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        // Make sure there's a remove button
+        let removeButton = template.querySelector('.remove-requirement');
+        if (!removeButton) {
+            removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-danger btn-sm remove-requirement';
+            removeButton.textContent = 'Remove';
+            template.querySelector('.card-body').appendChild(removeButton);
+        }
+
+        container.appendChild(template);
+    }
+
+    function updateRequirementIndices() {
+        container.querySelectorAll('.requirement-form').forEach((form, index) => {
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                const name = input.getAttribute('name');
+                if (name) {
+                    input.setAttribute('name', name.replace(/\[\d+\]/, `[${index}]`));
+                }
+            });
+        });
+    }
+
+    // Handle field type changes
+    container.addEventListener('change', function(e) {
+        if (e.target.name && e.target.name.includes('[field_type]')) {
+            const requirementForm = e.target.closest('.requirement-form');
+            const fieldOptionsDiv = requirementForm.querySelector('.field-options');
+            const formIndex = getRequirementIndex(requirementForm);
+
+            if (e.target.value === 'select') {
+                if (!fieldOptionsDiv) {
+                    const optionsHtml = `
+                        <div class="mb-3 field-options">
+                            <label class="form-label">Options (one per line)</label>
+                            <textarea class="form-control" name="requirements[${formIndex}][field_options]" rows="3"></textarea>
+                        </div>
+                    `;
+                    e.target.closest('.mb-3').insertAdjacentHTML('afterend', optionsHtml);
+                }
+            } else {
+                if (fieldOptionsDiv) {
+                    fieldOptionsDiv.remove();
+                }
+            }
+        }
+    });
+
+    function getRequirementIndex(requirementForm) {
+        return Array.from(requirementForm.parentNode.children).indexOf(requirementForm);
+    }
+});
