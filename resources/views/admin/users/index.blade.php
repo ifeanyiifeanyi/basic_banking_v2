@@ -25,6 +25,7 @@
                                 <th>Name</th>
                                 <th>Profile Photo</th>
                                 <th>Status</th>
+                                <th>Accounts</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -37,10 +38,39 @@
                                         <img src="{{ $user->photo }}" alt="profile photo" class="rounded-circle"
                                             width="100" height="100">
                                     </td>
-                                    <td>{{ $user->account_status ? 'ACTIVE' : 'INACTIVE' }}</td>
+                                    <td>
+                                        @if ($user->account_status)
+                                            <span class="badge bg-success">Active</span>
+                                        @else
+                                            <span class="badge bg-danger">Suspended</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            @foreach ($user->accounts as $account)
+                                                <li>
+                                                    {{ $account->account_number }}
+                                                    @if ($account->is_suspended)
+                                                        <span class="badge bg-danger">Suspended</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
                                     <td>
                                         <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm"
                                             style="background: blueviolet;color:white">View</a>
+
+                                        @if (!$user->account_status)
+                                            <form action="{{ route('admin.users.suspend', $user->id) }}" method="POST"
+                                                class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-warning"
+                                                    onclick="return confirm('Are you sure?')">
+                                                    Suspend All
+                                                </button>
+                                            </form>
+                                        @endif
 
                                         <a href="{{ route('admin.users.create_account', $user) }}"
                                             class="btn btn-sm btn-success">Add Account</a>
@@ -48,11 +78,13 @@
 
                                         <a href="" class="btn btn-sm btn-primary">Edit</a>
 
-                                        <form action="" method="POST" style="display: inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                        </form>
+                                        <form action="{{ route('admin.users.archive', $user->id) }}"
+                                            method="POST" class="d-inline">
+                                          @csrf
+                                          <button type="submit" class="btn btn-sm btn-danger"
+                                                  onclick="return confirm('Are you sure?')">
+                                              Archive
+                                          </button>
                                     </td>
 
 

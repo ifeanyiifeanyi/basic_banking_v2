@@ -36,7 +36,9 @@ class AdminManageUsersController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-
+    /**
+     * show user  account and profile
+     */
     public function show($user)
     {
         $user = $this->bankUserService->getUserById($user);
@@ -44,7 +46,9 @@ class AdminManageUsersController extends Controller
         return view('admin.users.show', compact('user', 'accounts'));
     }
 
-    
+    /**
+     * show user account transactions
+     */
     public function showAccount($userId, $accountId)
     {
         $account = Account::with(['user', 'accountType', 'transactions'])->findOrFail($accountId);
@@ -52,7 +56,9 @@ class AdminManageUsersController extends Controller
     }
 
 
-
+    /**
+     * create specific account view
+     */
     public function createAccount($userId)
     {
         $user = $this->bankUserService->getUserById($userId);
@@ -62,7 +68,9 @@ class AdminManageUsersController extends Controller
         return view('admin.users.create_account', compact('user', 'accountTypes', 'currencies'));
     }
 
-    // create a new account for user from the admin
+    /**
+     * create a new account for user from the admin
+     */
     public function storeAccount(CreateBankAccountRequest $request, $userId)
     {
         $user = $this->bankUserService->getUserById($userId);
@@ -80,7 +88,9 @@ class AdminManageUsersController extends Controller
 
 
 
-
+    /**
+     * credit specific account from admin
+     */
     public function creditAccount(TransactionRequest $request, $userId, $accountId)
     {
         // dd($request->all());
@@ -141,6 +151,9 @@ class AdminManageUsersController extends Controller
         return redirect()->back()->with('error', $result['message']);
     }
 
+    /**
+     * debit specific account from admin section
+     */
     public function debitAccount(TransactionRequest $request, $userId, $accountId)
     {
         $account = Account::findOrFail($accountId);
@@ -198,5 +211,90 @@ class AdminManageUsersController extends Controller
         }
 
         return redirect()->back()->with('error', $result['message']);
+    }
+
+    /*******************************************************************/
+
+
+    
+    /**
+     * Suspend specific account
+     */
+    public function suspendAccount(Request $request, $accountId)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255'
+        ]);
+
+        $this->bankUserService->suspendAccount($accountId);
+
+        return back()->with('success', 'Account suspended successfully');
+    }
+
+
+     /**
+     * Reactivate specific account
+     */
+    public function reactivateAccount($accountId)
+    {
+        $this->bankUserService->reactivateAccount($accountId);
+
+        return back()->with('success', 'Account reactivated successfully');
+    }
+
+    /**
+     * Suspend user and all accounts
+     */
+    public function suspendUser(Request $request, $userId)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255'
+        ]);
+
+        $this->bankUserService->suspendUser($userId, $request->reason);
+
+        return back()->with('success', 'User and all accounts suspended successfully');
+    }
+
+    /**
+     * Archive user
+     */
+    public function archiveUser($userId)
+    {
+        $this->bankUserService->archiveUser($userId);
+
+        return back()->with('success', 'User archived successfully');
+    }
+
+    /**
+     * Restore user from archive
+     */
+    public function restoreUser($userId)
+    {
+        $this->bankUserService->restoreUser($userId);
+
+        return back()->with('success', 'User restored successfully');
+    }
+
+    /**
+     * Toggle user's ability to transfer
+     */
+    public function toggleTransfer($userId)
+    {
+        $user = $this->bankUserService->getUserById($userId);
+        $user->update(['can_transfer' => !$user->can_transfer]);
+
+        return back()->with('success', 'Transfer ability updated successfully');
+    }
+
+    /**
+     * Toggle user's ability to receive
+     */
+    public function toggleReceive($userId)
+    {
+        $user = $this->bankUserService->getUserById($userId);
+        $user->update(['can_receive' => !$user->can_receive]);
+
+        return back()->with('success', 'Receive ability updated successfully');
     }
 }

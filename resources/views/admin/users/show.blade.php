@@ -26,7 +26,11 @@
                     <hr>
                     <div class="text-center">
                         <a href="{{ route('admin.edit-profile') }}"><button type="button"
-                                class="btn btn-primary btn-sm">View Transactions</button></a>
+                                class="btn btn-primary btn-sm">Log Activities</button></a>
+                        <button type="button" class="btn btn-sm" style="background: blueviolet;color:white" data-bs-toggle="modal"
+                            data-bs-target="#suspendUserModal">
+                            Suspend User
+                        </button>
                     </div>
                 </div>
             </div>
@@ -147,6 +151,7 @@
                                 <th>Account Type</th>
                                 <th>Currency</th>
                                 <th>Balance</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -158,6 +163,27 @@
                                     <td>{{ $account->currency->currency }}</td>
                                     <td>{{ number_format($account->account_balance, 2) }}</td>
                                     <td>
+                                        @if ($account->is_suspended)
+                                            <span class="badge bg-danger">Suspended</span>
+                                        @else
+                                            <span class="badge bg-success">Active</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($account->is_suspended)
+                                            <form action="{{ route('admin.users.accounts.reactivate', $account->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    Reactivate
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#suspendModal{{ $account->id }}">
+                                                Suspend
+                                            </button>
+                                        @endif
                                         <a href="{{ route('admin.users.show_account', [$user->id, $account->id]) }}"
                                             class="btn btn-sm btn-info">View Transactions</a>
 
@@ -165,15 +191,83 @@
                                             data-bs-target="#creditDebitModal{{ $account->id }}">
                                             Credit/Debit
                                         </button>
+
                                     </td>
                                 </tr>
+
+                                <!-- Suspend Account Modal -->
+                                <div class="modal fade" id="suspendModal{{ $account->id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Suspend Account</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form action="{{ route('admin.users.accounts.suspend', $account->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="reason" class="form-label">Suspension Reason</label>
+                                                        <textarea name="reason" class="form-control" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Suspend Account</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+
+        <!-- Activity Log  return for those later-->
+        {{-- <div class="row mt-4">
+            <div class="col-12">
+                <h5>Activity Log</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($user->activities()->latest()->take(10)->get() as $activity)
+                            <tr>
+                                <td>{{ $activity->created_at->format('Y-m-d H:i:s') }}</td>
+                                <td>{{ $activity->description }}</td>
+                                <td>
+                                    @if ($activity->changes)
+                                        <pre>{{ json_encode($activity->changes, JSON_PRETTY_PRINT) }}</pre>
+                                    @endif
+                                </td>
+                                <td>{{ $activity->properties['ip'] ?? 'N/A' }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center">No activity recorded</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> --}}
     </div>
+
+
 
     {{-- Modal Credit/Debit Form --}}
     @foreach ($accounts as $account)
@@ -201,8 +295,9 @@
                             </div>
                             <div class="mb-3">
                                 <label for="transactionType{{ $account->id }}" class="form-label">Type</label>
-                                <select class="form-select" id="transactionType{{ $account->id }}" name="transaction_type"
-                                    required onchange="updateFormAction{{ $account->id }}(this.value)">
+                                <select class="form-select" id="transactionType{{ $account->id }}"
+                                    name="transaction_type" required
+                                    onchange="updateFormAction{{ $account->id }}(this.value)">
                                     <option value="">Select transaction type</option>
                                     <option value="credit">Credit</option>
                                     <option value="debit">Debit</option>
@@ -212,8 +307,8 @@
                             <div class="mb-3">
                                 <label for="transactionDescription{{ $account->id }}"
                                     class="form-label">Description</label>
-                                <input type="text" class="form-control" id="transactionDescription{{ $account->id }}"
-                                    name="description" required />
+                                <input type="text" class="form-control"
+                                    id="transactionDescription{{ $account->id }}" name="description" required />
                                 <div class="invalid-feedback">Please provide a description.</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Process Transaction</button>
@@ -224,7 +319,33 @@
         </div>
     @endforeach
 
-
+    <!-- Suspend User Modal -->
+    <div class="modal fade" id="suspendUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Suspend User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ route('admin.users.suspend', $user->id) }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            This will suspend all accounts and disable all banking operations for this user.
+                        </div>
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Suspension Reason</label>
+                            <textarea name="reason" class="form-control" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Suspend User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 
@@ -248,4 +369,25 @@
             this.classList.add('was-validated');
         });
     </script>
+
+
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Handle confirmation dialogs
+            document.querySelectorAll('[data-confirm]').forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    if (!confirm(this.dataset.confirm)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script> --}}
 @endsection

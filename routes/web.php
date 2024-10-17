@@ -102,6 +102,25 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
         Route::post('/users/{userId}/accounts/{accountId}/credit', 'creditAccount')->name('admin.users.credit_account');
         Route::post('/users/{userId}/accounts/{accountId}/debit', 'debitAccount')->name('admin.users.debit_account');
 
+
+        // Account management
+        Route::post('/accounts/{account}/suspend', [AdminManageUsersController::class, 'suspendAccount'])
+            ->name('admin.users.accounts.suspend');
+        Route::post('/accounts/{account}/reactivate', [AdminManageUsersController::class, 'reactivateAccount'])
+            ->name('admin.accounts.reactivate');
+
+        // User management
+        Route::post('/{user}/suspend', [AdminManageUsersController::class, 'suspendUser'])
+            ->name('admin.users.suspend');
+        Route::post('/{user}/archive', [AdminManageUsersController::class, 'archiveUser'])
+            ->name('admin.users.archive');
+        Route::post('/{user}/restore', [AdminManageUsersController::class, 'restoreUser'])
+            ->name('admin.users.restore');
+        Route::post('/{user}/toggle-transfer', [AdminManageUsersController::class, 'toggleTransfer'])
+            ->name('admin.users.toggle-transfer');
+        Route::post('/{user}/toggle-receive', [AdminManageUsersController::class, 'toggleReceive'])
+            ->name('admin.users.toggle-receive');
+
         // Route::get('/users/create', 'create')->name('admin.users.create');
         // Route::post('/users', 'store')->name('admin.users.store');
         // Route::get('/users/{user}/edit', 'edit')->name('admin.users.edit');

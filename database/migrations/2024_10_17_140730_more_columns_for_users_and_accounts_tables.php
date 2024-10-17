@@ -60,6 +60,51 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            // Drop foreign keys first
+            $table->dropForeign(['archived_by']);
+            $table->dropForeign(['suspended_by']);
+            // $table->dropForeign(['kyc_verified_by']);
+
+            // Drop columns
+            $table->dropColumn([
+                'can_transfer',
+                'can_receive',
+                'is_archived',
+                'archived_at',
+                'archived_by',
+                'suspension_reason',
+                'suspended_at',
+                'suspended_by',
+                // 'kyc_status',
+                // 'kyc_verified_at',
+                // 'kyc_verified_by',
+                // 'last_activity',
+                // 'device_id',
+                // 'allowed_devices'
+            ]);
+        });
+
+        Schema::table('accounts', function (Blueprint $table) {
+            // Drop foreign keys first
+            $table->dropForeign(['suspended_by']);
+            $table->dropForeign(['reactivated_by']);
+
+            // Drop columns
+            $table->dropColumn([
+                'is_suspended',
+                'suspension_reason',
+                'suspended_at',
+                'suspended_by',
+                'reactivated_at',
+                'reactivated_by',
+                // 'account_type',
+                'daily_transfer_limit',
+                'monthly_transfer_limit',
+                'requires_approval'
+            ]);
+
+            $table->dropSoftDeletes();
+        });
     }
 };
