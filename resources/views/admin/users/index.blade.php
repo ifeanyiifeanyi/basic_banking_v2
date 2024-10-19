@@ -23,7 +23,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>Profile Photo</th>
+                                {{-- <th>Profile Photo</th> --}}
                                 <th>Status</th>
                                 <th>Accounts</th>
                                 <th>Actions</th>
@@ -34,10 +34,10 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ Str::title($user->full_name) }}</td>
-                                    <td>
+                                    {{-- <td>
                                         <img src="{{ $user->photo }}" alt="profile photo" class="rounded-circle"
                                             width="100" height="100">
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         @if ($user->account_status)
                                             <span class="badge bg-success">Active</span>
@@ -61,16 +61,19 @@
                                         <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm"
                                             style="background: blueviolet;color:white">View</a>
 
-                                        @if (!$user->account_status)
-                                            <form action="{{ route('admin.users.suspend', $user->id) }}" method="POST"
-                                                class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-warning"
-                                                    onclick="return confirm('Are you sure?')">
-                                                    Suspend All
-                                                </button>
-                                            </form>
+                                        @if ($user->account_status == true)
+                                            <a class="btn btn-sm btn-warning"
+                                                href="{{ route('admin.users.suspend_get', $user) }}"
+                                                onclick="return confirm('Are you sure?')">
+                                                Suspend All</a>
+                                        @else
+                                            <a onclick="return confirm('Are you sure of reactivation ?')"
+                                                href="{{ route('admin.users.reactivate_get', $user) }}"
+                                                class="btn btn-sm btn-secondary">
+                                                Reactivate All</a>
                                         @endif
+
+
 
                                         <a href="{{ route('admin.users.create_account', $user) }}"
                                             class="btn btn-sm btn-success">Add Account</a>
@@ -78,13 +81,16 @@
 
                                         <a href="" class="btn btn-sm btn-primary">Edit</a>
 
-                                        <form action="{{ route('admin.users.archive', $user->id) }}"
-                                            method="POST" class="d-inline">
-                                          @csrf
-                                          <button type="submit" class="btn btn-sm btn-danger"
-                                                  onclick="return confirm('Are you sure?')">
-                                              Archive
-                                          </button>
+                                        @if (!$user->is_archived)
+                                            <form action="{{ route('admin.users.archive', $user) }}" method="POST"
+                                                class="d-inline mt-2">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Are you sure you want to archive this user?')">
+                                                    Archive
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
 
 
@@ -103,4 +109,5 @@
 
 
 @section('javascript')
+
 @endsection

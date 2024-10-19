@@ -27,16 +27,36 @@
                     <div class="text-center">
                         <a href="{{ route('admin.edit-profile') }}"><button type="button"
                                 class="btn btn-primary btn-sm">Log Activities</button></a>
-                        @if ($user->accounts->first()->is_suspended)
-                        @else
+                        @if ($user->account_status)
                             <button type="button" class="btn btn-sm" style="background: blueviolet;color:white"
                                 data-bs-toggle="modal" data-bs-target="#suspendUserModal">
                                 Suspend User
                             </button>
+                        @else
+                            <a onclick="return confirm('Are you sure of reactivation ?')"
+                                href="{{ route('admin.users.reactivate_get', $user) }}" class="btn btn-sm btn-secondary">
+                                Reactivate Account</a>
                         @endif
-
-
                     </div>
+                    <div class="mt-2 text-center">
+                        <form action="{{ route('admin.users.toggle-transfer', $user) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button onclick="return confirm('Are you sure of this action ?')" type="submit"
+                                class="btn btn-sm {{ $user->can_transfer ? 'btn-danger' : 'btn-success' }}">
+                                {{ $user->can_transfer ? 'Disable Transfer' : 'Enable Transfer' }}
+                            </button>
+                        </form>
+
+                        <form action="{{ route('admin.users.toggle-receive', $user) }}" method="POST"
+                            class="d-inline ms-1">
+                            @csrf
+                            <button type="submit"
+                                class="btn btn-sm {{ $user->can_receive ? 'btn-danger' : 'btn-success' }}">
+                                {{ $user->can_receive ? 'Disable Receive' : 'Enable Receive' }}
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
 
@@ -105,23 +125,23 @@
                             <tbody>
                                 <tr>
                                     <td>Address</td>
-                                    <td>{{ $user->address ?? NA }}</td>
+                                    <td>{{ $user->address ?? 'NA' }}</td>
                                 </tr>
                                 <tr>
                                     <td>City</td>
-                                    <td>{{ $user->city ?? NA }}</td>
+                                    <td>{{ $user->city ?? 'NA' }}</td>
                                 </tr>
                                 <tr>
                                     <td>State</td>
-                                    <td>{{ $user->state ?? NA }}</td>
+                                    <td>{{ $user->state ?? 'NA' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Country</td>
-                                    <td>{{ $user->country ?? NA }}</td>
+                                    <td>{{ $user->country ?? 'NA' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Zip</td>
-                                    <td>{{ $user->zip ?? NA }}</td>
+                                    <td>{{ $user->zip ?? 'NA' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Occupation</td>
@@ -287,7 +307,8 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="transactionForm{{ $account->id }}" method="POST" class="needs-validation" novalidate>
+                        <form id="transactionForm{{ $account->id }}" method="POST" class="needs-validation"
+                            novalidate>
                             @csrf
                             <div class="mb-3">
                                 <label for="transactionAmount{{ $account->id }}" class="form-label">Amount</label>

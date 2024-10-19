@@ -106,10 +106,26 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
 
         // Account management
         Route::post('/accounts/{account}/suspend', 'suspendAccount')->name('admin.users.accounts.suspend');
+
+
         Route::post('/accounts/{account}/reactivate', 'reactivateAccount')->name('admin.users.accounts.reactivate');
 
         // User management
-        Route::post('/{user}/suspend', 'suspendUser')->name('admin.users.suspend');
+        // same functionality different request method
+        Route::post('profile/{user}/suspend', 'suspendUser')->name('admin.users.suspend');
+        Route::get('get/{user}/suspend', 'suspendUser')->name('admin.users.suspend_get');
+
+
+        Route::post('profile/{user}/reactivate', 'reactivateUser')->name('admin.users.reactivate');
+        Route::get('get/{user}/reactivate', 'reactivateUser')->name('admin.users.reactivate_get');
+
+        Route::post('profile/{user}/toggle-transfer', 'toggleTransferAbility')->name('admin.users.toggle-transfer');
+        Route::post('profile/{user}/toggle-receive', 'toggleReceiveAbility')->name('admin.users.toggle-receive');
+        Route::post('profile/{user}/archive', 'archiveUser')->name('admin.users.archive');
+
+
+
+
         Route::post('/{user}/archive', 'archiveUser')->name('admin.users.archive');
         Route::post('/{user}/restore', 'restoreUser')->name('admin.users.restore');
         Route::post('/{user}/toggle-transfer', 'toggleTransfer')->name('admin.users.toggle-transfer');
@@ -122,9 +138,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
         // Route::delete('/users/{user}', 'destroy')->name('admin.users.destroy');
     });
 
-    Route::controller(AdminCreateNewMemberAccountController::class)->group(function(){
+    Route::controller(AdminCreateNewMemberAccountController::class)->group(function () {
         Route::get('create-new-member', 'index')->name('admin.create_new.user');
-        Route::post('create-new-member', 'index')->name('admin.create_new.store');
+        Route::post('create-new-member', 'store')->name('admin.create_new.store');
     });
 
 

@@ -21,6 +21,7 @@
 
 @section('admin')
     <div class="container-fluid">
+        <x-alert-info/>
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -201,12 +202,17 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Country</label>
-                                                <input type="text" name="country"
-                                                    class="form-control @error('country') is-invalid @enderror"
-                                                    value="{{ old('country') }}">
+                                                <select class="form-control @error('country') is-invalid @enderror" name="country">
+                                                    <option value="" disabled selected>Select Country</option>
+                                                    @foreach ($countries as $country)
+                                                        <option {{ old('country') == 'country' ? 'selected' : '' }}
+                                                            value="{{ $country->name }}">{{ $country->name }}</option>
+                                                    @endforeach
+                                                </select>
                                                 @error('country')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
+
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -225,89 +231,122 @@
                             </div>
 
                             {{-- Account Settings --}}
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h4 class="mb-0">Account Settings</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Role <span class="text-danger">*</span></label>
-                                                <select name="role"
-                                                    class="form-control @error('role') is-invalid @enderror" required>
-                                                    <option value="member"
-                                                        {{ old('role') == 'member' ? 'selected' : '' }}>Member</option>
-                                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>
-                                                        Admin</option>
-                                                </select>
-                                                @error('role')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Account Status</label>
-                                                <select name="account_status"
-                                                    class="form-control @error('account_status') is-invalid @enderror">
-                                                    <option value="1"
-                                                        {{ old('account_status', '1') == '1' ? 'selected' : '' }}>Active
-                                                    </option>
-                                                    <option value="0"
-                                                        {{ old('account_status') == '0' ? 'selected' : '' }}>Inactive
-                                                    </option>
-                                                </select>
-                                                @error('account_status')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Two-Factor Authentication</label>
-                                                <select name="two_factor_enabled"
-                                                    class="form-control @error('two_factor_enabled') is-invalid @enderror">
-                                                    <option value="disabled"
-                                                        {{ old('two_factor_enabled', 'disabled') == 'disabled' ? 'selected' : '' }}>
-                                                        Disabled</option>
-                                                    <option value="enabled"
-                                                        {{ old('two_factor_enabled') == 'enabled' ? 'selected' : '' }}>
-                                                        Enabled</option>
-                                                </select>
-                                                @error('two_factor_enabled')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
+                            <div class="form-section mb-5">
+                                <h4 class="form-section-title">Account Settings</h4>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="required-field">Role</label>
+                                            <select name="role"
+                                                class="form-control @error('role') is-invalid @enderror" required>
+                                                <option value="member" {{ old('role') == 'member' ? 'selected' : '' }}>
+                                                    Member</option>
+                                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>
+                                                    Admin</option>
+                                            </select>
+                                            @error('role')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="canTransfer"
-                                                        name="can_transfer" value="1"
-                                                        {{ old('can_transfer', '1') == '1' ? 'checked' : '' }}>
-                                                    <label class="custom-control-label" for="canTransfer">Can Transfer
-                                                        Funds</label>
-                                                </div>
-                                            </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Account Status</label>
+                                            <select name="account_status"
+                                                class="form-control @error('account_status') is-invalid @enderror">
+                                                <option value="1"
+                                                    {{ old('account_status', '1') == '1' ? 'selected' : '' }}>Active
+                                                </option>
+                                                <option value="0"
+                                                    {{ old('account_status') == '0' ? 'selected' : '' }}>Inactive</option>
+                                            </select>
+                                            @error('account_status')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="canReceive"
-                                                        name="can_receive" value="1"
-                                                        {{ old('can_receive', '1') == '1' ? 'checked' : '' }}>
-                                                    <label class="custom-control-label" for="canReceive">Can Receive
-                                                        Funds</label>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Two-Factor Authentication</label>
+                                            <select name="two_factor_enabled"
+                                                class="form-control @error('two_factor_enabled') is-invalid @enderror">
+                                                <option value="disabled"
+                                                    {{ old('two_factor_enabled', 'disabled') == 'disabled' ? 'selected' : '' }}>
+                                                    Disabled
+                                                </option>
+                                                <option value="enabled"
+                                                    {{ old('two_factor_enabled') == 'enabled' ? 'selected' : '' }}>
+                                                    Enabled
+                                                </option>
+                                            </select>
+                                            @error('two_factor_enabled')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="canTransfer"
+                                                name="can_transfer" value="1"
+                                                {{ old('can_transfer', '1') == '1' ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="canTransfer">Can Transfer
+                                                Funds</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="canReceive"
+                                                name="can_receive" value="1"
+                                                {{ old('can_receive', '1') == '1' ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="canReceive">Can Receive Funds</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- Bank Account Details --}}
+                            <div class="form-section mt-4">
+                                <h4 class="form-section-title">Bank Account Details</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Account Type</label>
+                                            <select name="account_type_id"
+                                                class="form-control @error('account_type_id') is-invalid @enderror">
+                                                <option value="">Select Account Type</option>
+                                                @foreach ($accountTypes as $type)
+                                                    <option value="{{ $type->id }}"
+                                                        {{ old('account_type_id') == $type->id ? 'selected' : '' }}>
+                                                        {{ $type->name }}
+                                                        @if ($type->description)
+                                                            - {{ $type->description }}
+                                                        @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('account_type_id')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Initial Balance</label>
+                                            <input type="number" name="initial_balance"
+                                                class="form-control @error('initial_balance') is-invalid @enderror"
+                                                value="{{ old('initial_balance', '0.00') }}" step="0.01"
+                                                min="0">
+                                            @error('initial_balance')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <div class="row mt-4">
                                 <div class="col-12">

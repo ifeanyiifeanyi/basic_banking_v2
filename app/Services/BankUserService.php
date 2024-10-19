@@ -14,7 +14,7 @@ class BankUserService
 
     public function getAllUsers()
     {
-        return User::where('role', 'member')->with('accounts')->get();
+        return User::where('role', 'member')->with('accounts')->latest()->get();
     }
 
     public function getUserById($id)
@@ -30,26 +30,26 @@ class BankUserService
 
 
 
-    public function toggleSuspension($id)
-    {
-        $user = $this->getUserById($id);
-        $user->account_status = !$user->account_status;
-        $user->save();
-    }
+    // public function toggleSuspension($id)
+    // {
+    //     $user = $this->getUserById($id);
+    //     $user->account_status = !$user->account_status;
+    //     $user->save();
+    // }
 
-    public function toggleTransferAbility($id)
-    {
-        $user = $this->getUserById($id);
-        $user->can_transfer = !$user->can_transfer;
-        $user->save();
-    }
+    // public function toggleTransferAbility($id)
+    // {
+    //     $user = $this->getUserById($id);
+    //     $user->can_transfer = !$user->can_transfer;
+    //     $user->save();
+    // }
 
 
 
 
 
     /**
-     * Suspend a specific account
+     * Suspend a specific account number
      */
     public function suspendAccount($accountId)
     {
@@ -73,7 +73,7 @@ class BankUserService
     }
 
     /**
-     * Reactivate a specific account
+     * Reactivate a specific account number
      */
     public function reactivateAccount($accountId)
     {
@@ -131,6 +131,42 @@ class BankUserService
             return $user;
         });
     }
+
+    public function reactivateUser($userId, $reason = null)
+    {
+        return DB::transaction(function () use ($userId, $reason) {
+            $user = $this->getUserById($userId);
+
+            // Reactivate all accounts
+            $user->accounts()->update([
+                'is_suspended' => false,
+                'suspension_reason' => null,
+                'suspended_at' => null,
+                'suspended_by' => null,
+                'reactivated_at' => now(),
+                'reactivated_by' => Auth::id()
+
+            ]);
+
+            // Reactivate user access
+            $user->update([
+                'account_status' => true,
+                'can_transfer' => true,
+                'can_receive' => true,
+                'suspension_reason' => null,
+                'suspended_at' => null,
+                'suspended_by' => null,
+            ]);
+
+            activity()
+                ->performedOn($user)
+                ->causedBy(request()->user())
+                ->log('User reactivated with all accounts');
+
+            return $user;
+        });
+    }
+
 
     /**
      * Archive user and all their accounts
@@ -203,5 +239,39 @@ class BankUserService
                 $query->onlyTrashed();
             }])
             ->get();
+    }
+
+    public function toggleTransferAbility($userId)
+    {
+        return DB::transaction(function () use ($userId) {
+            $user = $this->getUserById($userId);
+            $user->update([
+                'can_transfer' => !$user->can_transfer
+            ]);
+
+            activity()
+                ->performedOn($user)
+                ->causedBy(request()->user())
+                ->log($user->can_transfer ? 'Transfer ability enabled' : 'Transfer ability disabled');
+
+            return $user;
+        });
+    }
+
+    public function toggleReceiveAbility($userId)
+    {
+        return DB::transaction(function () use ($userId) {
+            $user = $this->getUserById($userId);
+            $user->update([
+                'can_receive' => !$user->can_receive
+            ]);
+
+            activity()
+                ->performedOn($user)
+                ->causedBy(request()->user())
+                ->log($user->can_receive ? 'Receive ability enabled' : 'Receive ability disabled');
+
+            return $user;
+        });
     }
 }

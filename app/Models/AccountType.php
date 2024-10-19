@@ -11,14 +11,7 @@ class AccountType extends Model
 {
     use HasFactory, LogsActivity;
 
-    protected $fillable = [
-        'account_type',
-        'code',
-        'description',
-        'minimum_balance',
-        'interest_rate',
-        'is_active'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'is_active' => 'boolean',

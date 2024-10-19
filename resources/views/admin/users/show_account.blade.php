@@ -4,7 +4,7 @@
 
 @section('admin')
     <div class="container py-4">
-        <<x-alert-info/>
+        <x-alert-info/>
         <!-- Credit Card Style Account Details -->
         <div class="row mb-4">
             <div class="col-lg-8 mx-auto">

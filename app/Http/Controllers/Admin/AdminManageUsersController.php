@@ -12,6 +12,7 @@ use App\Services\BankUserService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Services\AccountCreationService;
 use App\Services\BankTransactionService;
 use App\Http\Requests\TransactionRequest;
@@ -216,7 +217,7 @@ class AdminManageUsersController extends Controller
     /*******************************************************************/
 
 
-    
+
     /**
      * Suspend specific account
      */
@@ -232,7 +233,7 @@ class AdminManageUsersController extends Controller
     }
 
 
-     /**
+    /**
      * Reactivate specific account
      */
     public function reactivateAccount($accountId)
@@ -245,26 +246,34 @@ class AdminManageUsersController extends Controller
     /**
      * Suspend user and all accounts
      */
-    public function suspendUser(Request $request, $userId)
+    // public function suspendUser(Request $request, $userId)
+    // {
+    //     dd("here");
+    //     $request->validate([
+    //         'reason' => 'nullable|string|max:255'
+    //     ]);
+    //     $reason = $request->reason ?? 'Action perform by ADMIN, ID: '.Auth::id();
+    //     $this->bankUserService->suspendUser($userId, $reason);
+
+    //     return back()->with('success', 'User and all accounts suspended successfully');
+    // }
+    public function suspendUser(Request $request, User $user)
     {
-        $request->validate([
-            'reason' => 'required|string|max:255'
-        ]);
-
-        $this->bankUserService->suspendUser($userId, $request->reason);
-
+        // dd("here..");
+        $reason = $request->reason ?? 'Action perform by ADMIN, ID: ' . Auth::id();
+        $this->bankUserService->suspendUser($user->id, $reason);
         return back()->with('success', 'User and all accounts suspended successfully');
     }
 
-    /**
-     * Archive user
-     */
-    public function archiveUser($userId)
+    public function reactivateUser(Request $request, $userId)
     {
-        $this->bankUserService->archiveUser($userId);
-
-        return back()->with('success', 'User archived successfully');
+        // dd("here..");
+        $reason = $request->reason ?? 'Action performed by ADMIN, ID: ' . Auth::id();
+        $this->bankUserService->reactivateUser($userId, $reason);
+        return back()->with('success', 'User and all accounts reactivated successfully');
     }
+
+
 
     /**
      * Restore user from archive
@@ -279,22 +288,28 @@ class AdminManageUsersController extends Controller
     /**
      * Toggle user's ability to transfer
      */
-    public function toggleTransfer($userId)
+    public function toggleTransferAbility(Request $request, $userId)
     {
-        $user = $this->bankUserService->getUserById($userId);
-        $user->update(['can_transfer' => !$user->can_transfer]);
-
+        $this->bankUserService->toggleTransferAbility($userId);
         return back()->with('success', 'Transfer ability updated successfully');
     }
 
     /**
      * Toggle user's ability to receive
      */
-    public function toggleReceive($userId)
+    public function toggleReceiveAbility(Request $request, $userId)
     {
-        $user = $this->bankUserService->getUserById($userId);
-        $user->update(['can_receive' => !$user->can_receive]);
-
+        $this->bankUserService->toggleReceiveAbility($userId);
         return back()->with('success', 'Receive ability updated successfully');
+    }
+
+
+    /**
+     * Archive user
+     */
+    public function archiveUser(Request $request, $userId)
+    {
+        $this->bankUserService->archiveUser($userId);
+        return back()->with('success', 'User archived successfully');
     }
 }
