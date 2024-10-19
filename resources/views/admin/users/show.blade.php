@@ -27,10 +27,15 @@
                     <div class="text-center">
                         <a href="{{ route('admin.edit-profile') }}"><button type="button"
                                 class="btn btn-primary btn-sm">Log Activities</button></a>
-                        <button type="button" class="btn btn-sm" style="background: blueviolet;color:white" data-bs-toggle="modal"
-                            data-bs-target="#suspendUserModal">
-                            Suspend User
-                        </button>
+                        @if ($user->accounts->first()->is_suspended)
+                        @else
+                            <button type="button" class="btn btn-sm" style="background: blueviolet;color:white"
+                                data-bs-toggle="modal" data-bs-target="#suspendUserModal">
+                                Suspend User
+                            </button>
+                        @endif
+
+
                     </div>
                 </div>
             </div>

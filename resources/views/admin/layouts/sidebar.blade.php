@@ -44,6 +44,7 @@
                     <a href="javascript:void(0);" class="waves-effect"><i class="dripicons-user"></i> <span> Users </span> <span class="float-right"><i class="mdi mdi-chevron-right"></i></span></a>
                     <ul class="list-unstyled">
                         <li><a href="{{ route('admin.users.index') }}">View Users</a></li>
+                        <li><a href="{{ route('admin.create_new.user') }}">Create User/account</a></li>
                     </ul>
                 </li>
 

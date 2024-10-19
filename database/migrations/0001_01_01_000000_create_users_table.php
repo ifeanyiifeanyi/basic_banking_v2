@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('country')->nullable();
+            $table->string('zip')->nullable()->after('role');
             $table->enum('role', ['admin', 'member'])->default('member');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

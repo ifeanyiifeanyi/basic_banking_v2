@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('account_type_id')->constrained();
             $table->foreignId('currency_id')->constrained();
             $table->decimal('account_balance', 10, 2)->default(0);
+            $table->double('initial_balance',10, 2)->after('account_balance');
             $table->timestamps();
         });
     }

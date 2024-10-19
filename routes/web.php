@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AdminCurrencyController;
 use App\Http\Controllers\Member\MemberProfileController;
 use App\Http\Controllers\Admin\AdminAccountTypeController;
+use App\Http\Controllers\Admin\AdminCreateNewMemberAccountController;
 use App\Http\Controllers\Admin\AdminKycQuestionController;
 use App\Http\Controllers\Admin\AdminManageUsersController;
 use App\Http\Controllers\Admin\AdminTwoFactorAuthController;
@@ -104,22 +105,15 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
 
 
         // Account management
-        Route::post('/accounts/{account}/suspend', [AdminManageUsersController::class, 'suspendAccount'])
-            ->name('admin.users.accounts.suspend');
-        Route::post('/accounts/{account}/reactivate', [AdminManageUsersController::class, 'reactivateAccount'])
-            ->name('admin.accounts.reactivate');
+        Route::post('/accounts/{account}/suspend', 'suspendAccount')->name('admin.users.accounts.suspend');
+        Route::post('/accounts/{account}/reactivate', 'reactivateAccount')->name('admin.users.accounts.reactivate');
 
         // User management
-        Route::post('/{user}/suspend', [AdminManageUsersController::class, 'suspendUser'])
-            ->name('admin.users.suspend');
-        Route::post('/{user}/archive', [AdminManageUsersController::class, 'archiveUser'])
-            ->name('admin.users.archive');
-        Route::post('/{user}/restore', [AdminManageUsersController::class, 'restoreUser'])
-            ->name('admin.users.restore');
-        Route::post('/{user}/toggle-transfer', [AdminManageUsersController::class, 'toggleTransfer'])
-            ->name('admin.users.toggle-transfer');
-        Route::post('/{user}/toggle-receive', [AdminManageUsersController::class, 'toggleReceive'])
-            ->name('admin.users.toggle-receive');
+        Route::post('/{user}/suspend', 'suspendUser')->name('admin.users.suspend');
+        Route::post('/{user}/archive', 'archiveUser')->name('admin.users.archive');
+        Route::post('/{user}/restore', 'restoreUser')->name('admin.users.restore');
+        Route::post('/{user}/toggle-transfer', 'toggleTransfer')->name('admin.users.toggle-transfer');
+        Route::post('/{user}/toggle-receive', 'toggleReceive')->name('admin.users.toggle-receive');
 
         // Route::get('/users/create', 'create')->name('admin.users.create');
         // Route::post('/users', 'store')->name('admin.users.store');
@@ -127,6 +121,17 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
         // Route::put('/users/{user}', 'update')->name('admin.users.update');
         // Route::delete('/users/{user}', 'destroy')->name('admin.users.destroy');
     });
+
+    Route::controller(AdminCreateNewMemberAccountController::class)->group(function(){
+        Route::get('create-new-member', 'index')->name('admin.create_new.user');
+        Route::post('create-new-member', 'index')->name('admin.create_new.store');
+    });
+
+
+
+
+
+
     // Route::controller(AdminBankRequirementController::class)->group(function () {
     //     Route::post('/banks/{bank}/requirements', 'store')->name('banks.requirements.store');
     //     Route::put('/banks/{bank}/requirements/{requirement}', 'update')->name('banks.requirements.update');
