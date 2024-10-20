@@ -38,7 +38,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="calendar.html" class="waves-effect"><i class="dripicons-to-do"></i><span> All Transactions </span></a>
+                    <a href="{{ route('admin.transaction.index') }}" class="waves-effect"><i class="dripicons-to-do"></i><span> All Transactions </span></a>
                 </li>
                 <li class="has_sub">
                     <a href="javascript:void(0);" class="waves-effect"><i class="dripicons-user"></i> <span> Users </span> <span class="float-right"><i class="mdi mdi-chevron-right"></i></span></a>

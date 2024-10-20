@@ -24,6 +24,7 @@ class BankTransaction extends Model
     protected $casts = [
         'submitted_requirements' => 'array',
         'amount' => 'decimal:2',
+        'transaction_date' => 'datetime'
     ];
 
     public function bank()

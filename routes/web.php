@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminCreateNewMemberAccountController;
 use App\Http\Controllers\Admin\AdminKycQuestionController;
 use App\Http\Controllers\Admin\AdminManageUsersController;
 use App\Http\Controllers\Admin\AdminTwoFactorAuthController;
+use App\Http\Controllers\Admin\AdminViewAllTransactionsController;
 use App\Http\Controllers\DashboardController as MainDashboard;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
@@ -139,6 +140,18 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
     Route::controller(AdminCreateNewMemberAccountController::class)->group(function () {
         Route::get('create-new-member', 'index')->name('admin.create_new.user');
         Route::post('create-new-member', 'store')->name('admin.create_new.store');
+    });
+
+    Route::controller(AdminViewAllTransactionsController::class)->group(function(){
+        Route::get('transactions', 'index')->name('admin.transaction.index');
+        Route::get('/transactions/export/csv', 'exportCsv')->name('admin.transaction.export.csv');
+        Route::get('/transactions/export/excel', 'exportExcel')->name('admin.transaction.export.excel');
+        Route::get('/transactions/export/pdf', 'exportPdf')->name('admin.transaction.export.pdf');
+        Route::get('/transactions/export/bulk', 'exportBulk')->name('admin.transaction.bulk-action');
+
+
+        Route::get('/transactions/{transaction}',  'show')->name('admin.transaction.show');
+        Route::post('/transactions/{transaction}/update-status',  'updateStatus')->name('admin.transaction.update-status');
     });
 
 
