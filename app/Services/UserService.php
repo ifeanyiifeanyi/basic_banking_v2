@@ -4,8 +4,9 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -14,6 +15,20 @@ class UserService
         $password = "12345678";
         $data['password'] = Hash::make($password);
         $data['username'] = $this->generateUsername($data['first_name'], $data['last_name']);
+        $data['email_verified_at'] = now();
+        
+
+        // Handle profile photo if provided
+        if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
+            $photo = $data['photo'];
+            $filename = time() . '_' . Str::slug($data['first_name']) . '_' . Str::slug($data['last_name']) . '.' . $photo->getClientOriginalExtension();
+
+            // Move the file to public/users/assets/images/users directory
+            $photo->move(public_path('members/photo'), $filename);
+
+            // Save the relative path in database
+            $data['photo'] = 'members/photo/' . $filename;
+        }
 
         $user = User::create($data);
 

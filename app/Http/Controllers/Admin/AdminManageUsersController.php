@@ -246,17 +246,6 @@ class AdminManageUsersController extends Controller
     /**
      * Suspend user and all accounts
      */
-    // public function suspendUser(Request $request, $userId)
-    // {
-    //     dd("here");
-    //     $request->validate([
-    //         'reason' => 'nullable|string|max:255'
-    //     ]);
-    //     $reason = $request->reason ?? 'Action perform by ADMIN, ID: '.Auth::id();
-    //     $this->bankUserService->suspendUser($userId, $reason);
-
-    //     return back()->with('success', 'User and all accounts suspended successfully');
-    // }
     public function suspendUser(Request $request, User $user)
     {
         // dd("here..");
@@ -264,7 +253,9 @@ class AdminManageUsersController extends Controller
         $this->bankUserService->suspendUser($user->id, $reason);
         return back()->with('success', 'User and all accounts suspended successfully');
     }
-
+/**
+     * reactivate user and all accounts
+     */
     public function reactivateUser(Request $request, $userId)
     {
         // dd("here..");

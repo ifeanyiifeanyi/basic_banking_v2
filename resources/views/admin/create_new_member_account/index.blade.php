@@ -320,10 +320,8 @@
                                                 @foreach ($accountTypes as $type)
                                                     <option value="{{ $type->id }}"
                                                         {{ old('account_type_id') == $type->id ? 'selected' : '' }}>
-                                                        {{ $type->name }}
-                                                        @if ($type->description)
-                                                            - {{ $type->description }}
-                                                        @endif
+                                                        {{ Str::title($type->account_type) }}
+
                                                     </option>
                                                 @endforeach
                                             </select>

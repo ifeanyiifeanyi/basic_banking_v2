@@ -38,9 +38,11 @@ class AdminCreateMemberRequest extends FormRequest
             'photo' => 'nullable|image|max:2048',
             'role' => 'required|string|in:member,admin',
             'account_status' => 'required|boolean',
-    'two_factor_enabled' => 'required|string|in:enabled,disabled',
+            'two_factor_enabled' => 'required|string|in:enabled,disabled',
             'can_transfer' => 'nullable|boolean',
             'can_receive' => 'nullable|boolean',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // 2MB max
+
 
             // Bank account related fields
             'account_type_id' => 'nullable|exists:account_types,id',
@@ -48,7 +50,8 @@ class AdminCreateMemberRequest extends FormRequest
         ];
     }
 
-    public function messages(){
+    public function messages()
+    {
         return [
             'first_name.required' => 'First name is required.',
             'last_name.required' => 'Last name is required.',
