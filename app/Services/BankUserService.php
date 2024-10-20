@@ -30,23 +30,6 @@ class BankUserService
 
 
 
-    // public function toggleSuspension($id)
-    // {
-    //     $user = $this->getUserById($id);
-    //     $user->account_status = !$user->account_status;
-    //     $user->save();
-    // }
-
-    // public function toggleTransferAbility($id)
-    // {
-    //     $user = $this->getUserById($id);
-    //     $user->can_transfer = !$user->can_transfer;
-    //     $user->save();
-    // }
-
-
-
-
 
     /**
      * Suspend a specific account number

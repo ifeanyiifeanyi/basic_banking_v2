@@ -3,16 +3,17 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\LoginTracker;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable,LogsActivity, SoftDeletes;
+    use HasFactory, Notifiable, LogsActivity, SoftDeletes, LoginTracker;
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -22,7 +23,8 @@ class User extends Authenticatable
             ->dontSubmitEmptyLogs();
     }
 
-    public function kycResponse(){
+    public function kycResponse()
+    {
         return $this->hasOne(KycResponse::class);
     }
 
@@ -109,10 +111,27 @@ class User extends Authenticatable
             'password' => 'hashed',
             'dob' => 'date',
             'account_status' => 'boolean',
+            'two_factor_enabled' => 'boolean',
+            'two_factor_secret' => 'string',
+            'two_factor_recovery_codes' => 'array',
+            'can_transfer' => 'boolean',
+            'can_receive' => 'boolean',
+            'is_archived' => 'boolean',
+            'kyc_status' => 'string',
+            'kyc_verified_at' => 'datetime',
+            'archived_at' => 'datetime',
+            'last_login' => 'datetime'
         ];
     }
 
-    public function accounts(){
+    public function accounts()
+    {
         return $this->hasMany(Account::class);
+    }
+
+    // In User model
+    public function archivedBy()
+    {
+        return $this->belongsTo(User::class, 'archived_by');
     }
 }

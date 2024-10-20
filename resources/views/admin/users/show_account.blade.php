@@ -4,7 +4,10 @@
 
 @section('admin')
     <div class="container py-4">
-        <x-alert-info/>
+        <x-alert-info />
+        <a href="{{ route('admin.users.index') }}" class="btn btn-sm mb-3" style="background: purple;color:white">All
+            Members</a>
+
         <!-- Credit Card Style Account Details -->
         <div class="row mb-4">
             <div class="col-lg-8 mx-auto">
@@ -43,7 +46,8 @@
                         <h4 class="card-title text-white mb-0">Credit Account</h4>
                     </div>
                     <div class="card-body p-4">
-                        <form action="{{ route('admin.users.credit_account', [$account->user->id, $account->id]) }}" method="POST">
+                        <form action="{{ route('admin.users.credit_account', [$account->user->id, $account->id]) }}"
+                            method="POST">
                             @csrf
                             <input type="hidden" name="transaction_type" value="credit">
                             <div class="form-group mb-3">
@@ -52,7 +56,7 @@
                                     <span class="input-group-text">{{ $account->currency->symbol }}</span>
                                     <input type="number" step="0.01" min="0.01"
                                         class="form-control @error('amount') is-invalid @enderror" id="credit_amount"
-                                        name="amount" >
+                                        name="amount">
                                     @error('amount')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -61,7 +65,7 @@
                             <div class="form-group mb-3">
                                 <label for="credit_description" class="form-label">Description</label>
                                 <input type="text" class="form-control @error('description') is-invalid @enderror"
-                                    id="credit_description" name="description" >
+                                    id="credit_description" name="description">
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -78,7 +82,8 @@
                         <h4 class="card-title text-white mb-0">Debit Account</h4>
                     </div>
                     <div class="card-body p-4">
-                        <form action="{{ route('admin.users.debit_account', [$account->user->id, $account->id]) }}" method="POST">
+                        <form action="{{ route('admin.users.debit_account', [$account->user->id, $account->id]) }}"
+                            method="POST">
                             @csrf
                             <input type="hidden" name="transaction_type" value="credit">
                             <div class="form-group mb-3">
@@ -87,7 +92,7 @@
                                     <span class="input-group-text">{{ $account->currency->symbol }}</span>
                                     <input type="number" step="0.01" min="0.01"
                                         class="form-control @error('amount') is-invalid @enderror" id="debit_amount"
-                                        name="amount" >
+                                        name="amount">
                                     @error('amount')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -96,7 +101,7 @@
                             <div class="form-group mb-3">
                                 <label for="debit_description" class="form-label">Description</label>
                                 <input type="text" class="form-control @error('description') is-invalid @enderror"
-                                    id="debit_description" name="description" >
+                                    id="debit_description" name="description">
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

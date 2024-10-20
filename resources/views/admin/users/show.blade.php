@@ -10,6 +10,7 @@
 
 @section('admin')
     <x-alert-info />
+    <a href="{{ route('admin.users.index') }}" class="btn btn-sm mb-3" style="background: purple;color:white">All Members</a>
 
     <div class="row">
         <div class="col-md-4">
@@ -22,6 +23,17 @@
                         <h4 class="mb-2">{{ $user->full_name }}</h4>
                         <p class="text-muted">{{ $user->email }}</p>
 
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <p class="text-muted">Date Joined</p>
+                        <p>
+                            {{ $user->created_at->format('d M, Y H:i A') }}
+                        </p>
+                        <small>{{ $user->created_at->diffForHumans() }}</small>
+                        <hr>
+                        <p class="text-muted">Last Logged In Date</p>
+                        <small>{{ $user->last_login ? $user->last_login->format('d M, Y H:i A') ?? '' : '', $user->last_location ?? '' }}</small>
                     </div>
                     <hr>
                     <div class="text-center">

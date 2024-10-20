@@ -303,4 +303,9 @@ class AdminManageUsersController extends Controller
         $this->bankUserService->archiveUser($userId);
         return back()->with('success', 'User archived successfully');
     }
+
+    public function archivedMembers(){
+        $archivedUsers = $this->bankUserService->getArchivedUsers();
+        return view('admin.users.archived_members', compact('archivedUsers'));
+    }
 }

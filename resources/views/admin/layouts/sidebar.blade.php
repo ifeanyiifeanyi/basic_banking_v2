@@ -12,7 +12,7 @@
     <div class="sidebar-user">
         <img src="{{ auth()->user()->photo }}" alt="user" class="mb-1 rounded-circle img-thumbnail">
         <h6 class="">{{ auth()->user()->full_name }}</h6>
-        <p class=" online-icon text-dark"><i class="mdi mdi-record text-success"></i>{{ auth()->user()->last_login ?? '' }}</p>
+        <p class=" online-icon text-dark"><i class="mdi mdi-record text-success"></i>  Last Login <br><code>{{ auth()->user()->last_login->format('d M, Y') ?? '' }}</code></p>
         <ul class="mt-2 mb-0 list-unstyled list-inline">
             <li class="list-inline-item">
                 <a href="{{ route('admin.profile') }}" class="" data-toggle="tooltip" data-placement="top" title="Profile"><i class="dripicons-user text-purple"></i></a>
@@ -45,6 +45,7 @@
                     <ul class="list-unstyled">
                         <li><a href="{{ route('admin.users.index') }}">View Users</a></li>
                         <li><a href="{{ route('admin.create_new.user') }}">Create User/account</a></li>
+                        <li><a href="{{ route('admin.users.archived_members') }}">Archived Members</a></li>
                     </ul>
                 </li>
 

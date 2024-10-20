@@ -5,6 +5,8 @@
 @section('admin')
     <div class="container">
         <x-alert-info/>
+    <a href="{{ route('admin.users.index') }}" class="btn btn-sm mb-3" style="background: purple;color:white">All Members</a>
+       
         <div class="card">
             <div class="card-header">
                 <h2>Create Account for {{ $user->full_name }}</h2>

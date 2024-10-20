@@ -126,16 +126,14 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
 
 
 
-        Route::post('/{user}/archive', 'archiveUser')->name('admin.users.archive');
+        // Route::post('/{user}/archive', 'archiveUser')->name('admin.users.archive');
         Route::post('/{user}/restore', 'restoreUser')->name('admin.users.restore');
-        Route::post('/{user}/toggle-transfer', 'toggleTransfer')->name('admin.users.toggle-transfer');
-        Route::post('/{user}/toggle-receive', 'toggleReceive')->name('admin.users.toggle-receive');
+        // Route::post('/{user}/toggle-transfer', 'toggleTransfer')->name('admin.users.toggle-transfer');
+        // Route::post('/{user}/toggle-receive', 'toggleReceive')->name('admin.users.toggle-receive');
 
-        // Route::get('/users/create', 'create')->name('admin.users.create');
-        // Route::post('/users', 'store')->name('admin.users.store');
-        // Route::get('/users/{user}/edit', 'edit')->name('admin.users.edit');
-        // Route::put('/users/{user}', 'update')->name('admin.users.update');
-        // Route::delete('/users/{user}', 'destroy')->name('admin.users.destroy');
+        // fetch archived users (softDeletes)
+        Route::get('archived-members', 'archivedMembers')->name('admin.users.archived_members');
+;
     });
 
     Route::controller(AdminCreateNewMemberAccountController::class)->group(function () {

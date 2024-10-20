@@ -10,8 +10,8 @@
 @section('admin')
 
     <div class="container">
+        <x-alert-info />
         <div class="card">
-            <x-alert-info />
             <div class="card-header">
                 <h2>Members</h2>
             </div>
@@ -24,6 +24,7 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 {{-- <th>Profile Photo</th> --}}
+                                <th>country</th>
                                 <th>Status</th>
                                 <th>Accounts</th>
                                 <th>Actions</th>
@@ -33,7 +34,14 @@
                             @foreach ($users as $user)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ Str::title($user->full_name) }}</td>
+                                    <td>
+                                        {{ Str::title($user->full_name) }}
+                                        <p>
+                                            <a href="{{ route('admin.users.show', $user) }}" class="link text-primary">{{ "@".$user->username }}</a>
+                                        </p>
+                                    </td>
+                                    <td>{{ $user->country }}</td>
+
                                     {{-- <td>
                                         <img src="{{ $user->photo }}" alt="profile photo" class="rounded-circle"
                                             width="100" height="100">
@@ -58,16 +66,21 @@
                                         </ul>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm"
-                                            style="background: blueviolet;color:white">View</a>
+                                        <a data-toggle="tooltip" data-placement="top" title="View user details"
+                                        href="{{ route('admin.users.show', $user) }}" class="btn btn-sm"
+                                            style="background: blueviolet;color:white">
+                                            <i class="fas fa-street-view"></i>
+                                        </a>
 
                                         @if ($user->account_status == true)
-                                            <a class="btn btn-sm btn-warning"
+                                            <a data-toggle="tooltip" data-placement="top" title="Suspend all user assets" class="btn btn-sm btn-warning"
                                                 href="{{ route('admin.users.suspend_get', $user) }}"
                                                 onclick="return confirm('Are you sure?')">
-                                                Suspend All</a>
+                                                <i class="fas fa-user-times"></i>
+                                                </a>
                                         @else
-                                            <a onclick="return confirm('Are you sure of reactivation ?')"
+                                            <a data-toggle="tooltip" data-placement="top" title="Reactive user assets"
+                                            onclick="return confirm('Are you sure of reactivation ?')"
                                                 href="{{ route('admin.users.reactivate_get', $user) }}"
                                                 class="btn btn-sm btn-secondary">
                                                 Reactivate All</a>
@@ -75,19 +88,19 @@
 
 
 
-                                        <a href="{{ route('admin.users.create_account', $user) }}"
-                                            class="btn btn-sm btn-success">Add Account</a>
+                                        <a data-toggle="tooltip" data-placement="top" title="Create new user account" href="{{ route('admin.users.create_account', $user) }}"
+                                            class="btn btn-sm btn-success"><i class="fas fa-user-plus"></i></a>
 
 
-                                        <a href="" class="btn btn-sm btn-primary">Edit</a>
+                                        {{-- <a href="" class="btn btn-sm btn-primary">Edit</a> --}}
 
                                         @if (!$user->is_archived)
-                                            <form action="{{ route('admin.users.archive', $user) }}" method="POST"
+                                            <form data-toggle="tooltip" data-placement="top" title="Archive user account" action="{{ route('admin.users.archive', $user) }}" method="POST"
                                                 class="d-inline mt-2">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-danger"
                                                     onclick="return confirm('Are you sure you want to archive this user?')">
-                                                    Archive
+                                                     <i class="fas fa-file-archive"></i>
                                                 </button>
                                             </form>
                                         @endif
