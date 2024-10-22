@@ -27,7 +27,7 @@
 
 
             <li class="side-nav-item {{ Request::routeIs('member.dashboard') ? 'bg-primary text-muted' : '' }}">
-                <a href="index.html" class="side-nav-link">
+                <a href="{{ route('member.dashboard')}}" class="side-nav-link">
                     <i class="ri-dashboard-3-line"></i>
                     <span> Dashboard </span>
                 </a>

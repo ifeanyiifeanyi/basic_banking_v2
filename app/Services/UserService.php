@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserService
 {
@@ -16,7 +17,7 @@ class UserService
         $data['password'] = Hash::make($password);
         $data['username'] = $this->generateUsername($data['first_name'], $data['last_name']);
         $data['email_verified_at'] = now();
-        
+
 
         // Handle profile photo if provided
         if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
@@ -72,5 +73,18 @@ class UserService
         }
 
         return $username;
+    }
+
+    public function updateProfile(User $user, array $data)
+    {
+        if (isset($data['photo'])) {
+            if ($user->photo && !str_contains($user->photo, 'avatar-9.jpg')) {
+                Storage::delete($user->photo);
+            }
+            $data['photo'] = $data['photo']->store('members/photo', 'public');
+        }
+
+        $user->update($data);
+        return $user;
     }
 }
