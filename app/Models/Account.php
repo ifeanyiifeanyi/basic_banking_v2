@@ -12,7 +12,10 @@ class Account extends Model
 
     protected $guarded = [];
 
-
+    public function scopeActive($query)
+    {
+        return $query->where('is_suspended', false);
+    }
 
     public function user()
     {

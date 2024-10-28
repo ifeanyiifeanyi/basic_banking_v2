@@ -38,6 +38,12 @@
                     <span> Profile </span>
                 </a>
             </li>
+            <li class="side-nav-item">
+                <a href="{{ route('member.money_transfer.create') }}" class="side-nav-link">
+                    <i class="ri-wallet-2-fill"></i>
+                    <span> Money Transfer </span>
+                </a>
+            </li>
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarPages" aria-expanded="false"
@@ -53,6 +59,9 @@
                         </li>
                         <li>
                             <a href="{{ route('member.account.create') }}">Create Account</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('member.account.report') }}">Account Report</a>
                         </li>
                     </ul>
                 </div>

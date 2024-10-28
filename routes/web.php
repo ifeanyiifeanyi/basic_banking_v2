@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController as MainDashboard;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\Member\MemberAccountController;
+use App\Http\Controllers\Member\MemberTransactionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -197,6 +198,10 @@ Route::prefix('private')->middleware(['auth', 'role:member'])->group(function ()
         Route::get('account/report', 'report')->name('member.account.report');
         Route::get('account/report/export', 'exportReport')->name('member.account.exportReport');
 
+    });
+
+    Route::controller(MemberTransactionController::class)->group(function(){
+       Route::get('money-transfer', 'create')->name('member.money_transfer.create');
     });
 
     // Route::controller(BankController::class)->group(function () {

@@ -3,13 +3,11 @@
 @section('title', 'Transaction Report')
 
 @section('member')
-    <div class="container-fluid">
         <!-- Page Header -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h4 class="text-dark fw-bold mb-0">Transaction Report</h4>
                         <p class="text-muted mb-0">Complete overview of all your account transactions</p>
                     </div>
                     <div>
@@ -221,7 +219,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
 
 
