@@ -115,52 +115,8 @@ class MemberTransactionController extends Controller
             ->with(['fromAccount', 'bank'])
             ->firstOrFail();
 
-        return view('members.transfers.confirm', compact('transfer'));
+        return view('members.transfer.confirm', compact('transfer'));
     }
 
-    // public function validateAccount(ValidateAccountRequest $request)
-    // {
-    //     try {
-    //         $account = Account::where('account_number', $request->account_number)
-    //             ->where('is_suspended', false)
-    //             ->with(['user', 'accountType'])
-    //             ->firstOrFail();
 
-    //         // Don't allow transfer to own account
-    //         if ($account->user_id === request()->user()->id) {
-    //             return response()->json([
-    //                 'error' => 'Cannot transfer to your own account'
-    //             ], 422);
-    //         }
-
-    //         return response()->json([
-    //             'account_name' => $account->user->full_name,
-    //             'account_type' => $account->accountType->name,
-    //             'account_status' => 'Active',
-    //             'account_id' => $account->id
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'error' => 'Invalid account number'
-    //         ], 404);
-    //     }
-    // }
-
-    // public function processTransfer(ProcessTransferRequest $request)
-    // {
-    //     try {
-    //         $result = $this->transferService->process($request->validated());
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Transfer initiated successfully',
-    //             'data' => $result
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $e->getMessage()
-    //         ], 422);
-    //     }
-    // }
 }

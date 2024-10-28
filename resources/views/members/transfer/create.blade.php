@@ -778,9 +778,9 @@
                     const data = await response.json();
 
                     if (!response.ok) throw new Error(data.message);
-
+                    console.log("returned from internal trans",data.transfer.reference)
                     // Show success message and redirect to confirmation page
-                    window.location.href = `/transfers/${data.transfer_id}/confirm`;
+                    window.location.href = `/transfers/${data.transfer.reference}/confirm`;
                 } catch (error) {
                     showError(error.message || 'Transfer initiation failed');
                 }

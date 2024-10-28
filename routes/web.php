@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/api/validate-account', [MemberTransactionController::class, 'validateAccount']);
     Route::get('/api/banks/{bank}/requirements', [MemberTransactionController::class, 'getBankRequirements']);
     Route::post('/api/transfers', [MemberTransactionController::class, 'store']);
+    Route::get('/transfers/{reference}/confirm', [MemberTransactionController::class, 'confirm']);
 });
 
 Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(function () {
