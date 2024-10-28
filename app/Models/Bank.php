@@ -36,4 +36,9 @@ class Bank extends Model
     {
         return $this->hasMany(BankTransaction::class);
     }
+
+    public function transfers()
+    {
+        return $this->hasMany(Transfer::class);
+    }
 }

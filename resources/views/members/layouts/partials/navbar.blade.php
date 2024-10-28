@@ -389,7 +389,7 @@
                     </a>
 
                     <!-- item-->
-                    <a href="auth-logout-2.html" class="dropdown-item">
+                    <a href="{{ route('member.logout') }}" class="dropdown-item">
                         <i class="ri-logout-box-line fs-18 align-middle me-1"></i>
                         <span>Logout</span>
                     </a>

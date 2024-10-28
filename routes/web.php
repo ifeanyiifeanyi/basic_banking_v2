@@ -24,6 +24,13 @@ Route::get('/', function () {
 });
 Route::get('/dashboard', MainDashboard::class)->name('dashboard');
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    // API routes for transfer functionality
+    Route::post('/api/validate-account', [MemberTransactionController::class, 'validateAccount']);
+    Route::get('/api/banks/{bank}/requirements', [MemberTransactionController::class, 'getBankRequirements']);
+    Route::post('/api/transfers', [MemberTransactionController::class, 'store']);
+});
+
 Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(function () {
     Route::controller(AdminDashboardController::class)->group(function () {
         Route::get('dashboard', 'index')->name('admin.dashboard');
@@ -179,6 +186,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
 Route::prefix('private')->middleware(['auth', 'role:member'])->group(function () {
     Route::controller(MemberDashboardController::class)->group(function () {
         Route::get('dashboard', 'index')->name('member.dashboard');
+        Route::get('logout', 'logout')->name('member.logout');
+
     });
 
     Route::controller(MemberProfileController::class)->group(function () {

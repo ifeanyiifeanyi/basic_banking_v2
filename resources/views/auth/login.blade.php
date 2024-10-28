@@ -3,7 +3,7 @@
 
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
@@ -53,7 +53,7 @@
                         <div class="form-group row">
                             <div class="col-12">
                                 <input class="form-control" name="email" type="text" value="{{ old('email') }}"
-                                    placeholder="Username / Email Address" autocomplete="username" autofocus>
+                                    placeholder="Username / Email Address" autocomplete="true" autofocus>
                                 @error('email')
                                     <p class="text-danger">{{ $message }}</p>
                                 @enderror

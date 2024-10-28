@@ -7,6 +7,36 @@ use Illuminate\Support\Facades\DB;
 // THIS SERVICE IS FOR CREATING NEW BANK, AND THE BANK TRANSACTION REQUIREMENTS
 class BankService
 {
+    public function getActiveBanks()
+    {
+        return Bank::where('is_active', true)
+            ->with(['requirements' => function ($query) {
+                $query->orderBy('order');
+            }])
+            ->get()
+            ->map(function ($bank) {
+                return [
+                    'id' => $bank->id,
+                    'name' => $bank->name,
+                    'code' => $bank->code,
+                    'swift_code' => $bank->swift_code,
+                    'requirements' => $bank->requirements->map(function ($req) {
+                        return [
+                            'name' => $req->field_name,
+                            'type' => $req->field_type,
+                            'options' => $req->field_options,
+                            'required' => $req->is_required,
+                            'description' => $req->description,
+                            'placeholder' => $req->placeholder,
+                            'validation_rules' => $req->validation_rules,
+                            'order' => $req->order
+                        ];
+                    })
+                ];
+            });
+    }
+
+    
     public function createBank(array $data)
     {
         return DB::transaction(function () use ($data) {

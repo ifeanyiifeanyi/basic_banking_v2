@@ -6,6 +6,7 @@ use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Services\AccountCreationService;
 
 class DashboardController extends Controller
@@ -36,5 +37,15 @@ class DashboardController extends Controller
             'maxAccounts' => AccountCreationService::MAX_ACCOUNTS_PER_USER,
             'canCreateMoreAccounts' => $user->accounts()->count() < AccountCreationService::MAX_ACCOUNTS_PER_USER
         ]);
+    }
+
+
+    public function logout(Request $request){
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+        return redirect()->route('login');
     }
 }
