@@ -4,7 +4,7 @@
 
 @section('member')
     <div class="container-fluid">
-      
+
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -122,8 +122,13 @@
                             <div class="mb-3 row">
                                 <div class="col-md-6">
                                     <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="country"
-                                        value="{{ old('country', $user->country) }}" required>
+                                    <select name="country" id="country" class="form-control">
+                                        @foreach ($countries as $country)
+                                            <option {{ $country->name == $user->country ? 'selected' : '' }} value="{{ $country->name }}">
+                                                {{ $country->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">ZIP Code</label>

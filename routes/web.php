@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\AdminViewAllTransactionsController;
 use App\Http\Controllers\DashboardController as MainDashboard;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
+use App\Http\Controllers\Member\MemberAccountController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -133,8 +134,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
         // Route::post('/{user}/toggle-receive', 'toggleReceive')->name('admin.users.toggle-receive');
 
         // fetch archived users (softDeletes)
-        Route::get('archived-members', 'archivedMembers')->name('admin.users.archived_members');
-;
+        Route::get('archived-members', 'archivedMembers')->name('admin.users.archived_members');;
     });
 
     Route::controller(AdminCreateNewMemberAccountController::class)->group(function () {
@@ -142,7 +142,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin', '2fa'])->group(functio
         Route::post('create-new-member', 'store')->name('admin.create_new.store');
     });
 
-    Route::controller(AdminViewAllTransactionsController::class)->group(function(){
+    Route::controller(AdminViewAllTransactionsController::class)->group(function () {
         Route::get('transactions', 'index')->name('admin.transaction.index');
         Route::get('/transactions/export/csv', 'exportCsv')->name('admin.transaction.export.csv');
         Route::get('/transactions/export/excel', 'exportExcel')->name('admin.transaction.export.excel');
@@ -185,6 +185,18 @@ Route::prefix('private')->middleware(['auth', 'role:member'])->group(function ()
         Route::get('edit-profile', 'edit')->name('member.edit-profile');
         Route::put('update-profile', 'update')->name('member.update-profile');
         Route::post('upload-avatar', 'uploadAvatar')->name('member.upload-avatar');
+    });
+
+    Route::controller(MemberAccountController::class)->group(function(){
+        Route::get('accounts', 'index')->name('member.account.index');
+        Route::get('accounts/create', 'create')->name('member.account.create');
+        Route::post('accounts', 'store')->name('member.account.store');
+        Route::get('accounts/{account}', 'show')->name('member.account.show');
+        Route::get('accounts/{account}/export', 'exportTransactions')->name('member.account.export-transactions');
+
+        Route::get('account/report', 'report')->name('member.account.report');
+        Route::get('account/report/export', 'exportReport')->name('member.account.exportReport');
+
     });
 
     // Route::controller(BankController::class)->group(function () {

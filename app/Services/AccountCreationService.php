@@ -16,7 +16,7 @@ use App\Services\UserAccountNotificationService;
 class AccountCreationService
 {
     private $notificationService;
-    private const MAX_ACCOUNTS_PER_USER = 3;
+    public const MAX_ACCOUNTS_PER_USER = 3;
 
     public function __construct(UserAccountNotificationService $notificationService)
     {
@@ -88,7 +88,7 @@ class AccountCreationService
             'transaction_type' => 'credit',
             'status' => 'completed',
             'description' => 'Initial account funding',
-            'submitted_requirements' => json_encode(['initial_funding' => true]),
+            'submitted_requirements' => json_encode(['initial_funding' => true, 'amount' => $amount]),
         ]);
     }
 
@@ -113,7 +113,7 @@ class AccountCreationService
                 'new' => $data
             ])
             ->log('Bank Account created and funded');
-            
+
     }
 
     private function sendNotifications(User $user, Account $account, $transaction)

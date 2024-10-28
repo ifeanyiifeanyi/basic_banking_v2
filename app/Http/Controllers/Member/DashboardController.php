@@ -24,11 +24,17 @@ class DashboardController extends Controller
         $accounts = $user->accounts()->with(['accountType', 'currency'])->get();
         $totalBalance = $accounts->sum('account_balance');
         $currency = Currency::active()->first();
-        return view('members.dashboard', compact(
-            'user',
-            'accounts',
-            'totalBalance',
-            'currency'
-        ));
+            $hasAnyAccounts = $user->accounts()->exists();
+
+        return view('members.dashboard', [
+            'user' => $user,
+            'accounts' => $accounts,
+            'totalBalance' => $totalBalance,
+            'currency' => $currency,
+            'hasAnyAccounts' => $hasAnyAccounts,
+            'accountCount' => $user->accounts()->count(),
+            'maxAccounts' => AccountCreationService::MAX_ACCOUNTS_PER_USER,
+            'canCreateMoreAccounts' => $user->accounts()->count() < AccountCreationService::MAX_ACCOUNTS_PER_USER
+        ]);
     }
 }
