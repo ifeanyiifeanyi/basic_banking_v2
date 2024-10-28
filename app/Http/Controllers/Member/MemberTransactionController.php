@@ -12,6 +12,7 @@ use App\Services\TransferService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProcessTransferRequest;
 use App\Http\Requests\ValidateAccountRequest;
+use App\Models\Currency;
 
 class MemberTransactionController extends Controller
 {
@@ -111,12 +112,14 @@ class MemberTransactionController extends Controller
 
     public function confirm($reference)
     {
-        $transfer = Transfer::where('reference', $reference)
-            ->with(['fromAccount', 'bank'])
-            ->firstOrFail();
+        $currency = Currency::active()->first();
+        $transfer = Transfer::where('reference', $reference)->firstOrFail();
+        $fromAccount = $transfer->fromAccount;
+        $toAccount = Account::where('account_number', $transfer->to_account_number)->firstOrFail();
+        // dd($toAccount);
+        // $toAccount = $transfer->toAccount;
 
-        return view('members.transfer.confirm', compact('transfer'));
+
+        return view('members.transfer.confirm', compact('transfer', 'fromAccount', 'toAccount', 'currency'));
     }
-
-
 }

@@ -41,4 +41,8 @@ class Bank extends Model
     {
         return $this->hasMany(Transfer::class);
     }
+
+    public function currency(){
+        return $this->belongsTo(Currency::class);
+    }
 }
