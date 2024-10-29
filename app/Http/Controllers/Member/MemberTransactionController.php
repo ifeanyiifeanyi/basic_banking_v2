@@ -17,6 +17,7 @@ use App\Models\Currency;
 class MemberTransactionController extends Controller
 {
 
+
     protected $transferService;
     protected $bankService;
 
@@ -28,6 +29,7 @@ class MemberTransactionController extends Controller
 
     public function create()
     {
+        
         $user = request()->user();
         $accounts = $user->accounts()->active()
             ->with('currency')

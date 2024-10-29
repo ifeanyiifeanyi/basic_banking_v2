@@ -211,316 +211,6 @@
 
 @section('javascript')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const transferForm = document.getElementById('transferForm');
-            const fromAccountSelect = document.querySelector('select[name="from_account_id"]');
-            const transferTypeInputs = document.querySelectorAll('input[name="transfer_type"]');
-            const internalFields = document.getElementById('internalFields');
-            const externalFields = document.getElementById('externalFields');
-            const bankSelect = document.querySelector('select[name="bank_id"]');
-            const validateAccountBtn = document.getElementById('validateAccount');
-            const accountDetails = document.getElementById('accountDetails');
-            let validatedAccount = null;
-
-            // Initialize clipboard.js
-            const clipboard = new ClipboardJS('.copy-btn');
-            clipboard.on('success', function() {
-                showToast('Account number copied to clipboard!', 'success');
-            });
-
-            // Handle from account selection
-            fromAccountSelect.addEventListener('change', function() {
-                const selected = this.options[this.selectedIndex];
-                if (selected.value) {
-                    document.getElementById('selectedAccountNumber').textContent = selected.dataset.number;
-                    document.querySelector('.currency-symbol').textContent = selected.dataset.currency;
-                    document.querySelector('.available-balance').textContent =
-                        `Available Balance: ${selected.dataset.currency}${parseFloat(selected.dataset.balance).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                    updateTransferSummary();
-                }
-            });
-
-            // Handle transfer type selection
-            transferTypeInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    if (this.value === 'internal') {
-                        internalFields.style.display = 'block';
-                        externalFields.style.display = 'none';
-                        resetBankRequirements();
-                    } else {
-                        internalFields.style.display = 'none';
-                        externalFields.style.display = 'block';
-                        accountDetails.style.display = 'none';
-                        validatedAccount = null;
-                    }
-                    updateTransferSummary();
-                });
-            });
-
-            // Handle bank selection
-            bankSelect?.addEventListener('change', function() {
-                const bank = @json($banks).find(b => b.id == this.value);
-                if (!bank) return;
-
-                const requirementsDiv = document.getElementById('dynamicRequirements');
-                requirementsDiv.innerHTML = '';
-
-                bank.requirements.forEach(req => {
-                    const fieldContainer = document.createElement('div');
-                    fieldContainer.className = 'mb-4';
-
-                    let fieldHtml = `<label class="form-label">${req.label}</label>`;
-
-                    if (req.type === 'select' && req.options) {
-                        fieldHtml += `
-                    <select name="${req.name}" class="form-control" ${req.required ? 'required' : ''}>
-                        <option value="">Select ${req.label}</option>
-                        ${req.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                    </select>`;
-                    } else {
-                        fieldHtml += `
-                    <input type="${req.type}"
-                           name="${req.name}"
-                           class="form-control"
-                           placeholder="${req.placeholder}"
-                           ${req.required ? 'required' : ''}>`;
-                    }
-
-                    if (req.description) {
-                        fieldHtml += `<small class="text-muted">${req.description}</small>`;
-                    }
-
-                    fieldContainer.innerHTML = fieldHtml;
-                    requirementsDiv.appendChild(fieldContainer);
-                });
-
-                updateTransferSummary();
-            });
-
-            // Handle account validation
-            validateAccountBtn.addEventListener('click', async function() {
-                const accountNumber = document.querySelector('input[name="to_account_number"]').value;
-                if (!accountNumber) {
-                    showError('Please enter an account number');
-                    return;
-                }
-
-                try {
-                    const response = await fetch('/transfer/validate-account', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .content
-                        },
-                        body: JSON.stringify({
-                            account_number: accountNumber
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        validatedAccount = data;
-                        accountDetails.style.display = 'block';
-                        document.getElementById('accountInfo').innerHTML = `
-                    <p class="mb-1"><strong>Account Name:</strong> ${data.account_name}</p>
-                    <p class="mb-1"><strong>Account Type:</strong> ${data.account_type}</p>
-                    <p class="mb-0"><strong>Status:</strong> ${data.account_status}</p>
-                `;
-                        updateTransferSummary();
-                    } else {
-                        throw new Error(data.error);
-                    }
-                } catch (error) {
-                    accountDetails.style.display = 'none';
-                    validatedAccount = null;
-                    showError(error.message);
-                }
-            });
-
-            // Handle form submission
-            transferForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                if (!validateForm()) return;
-
-                showConfirmationModal();
-            });
-
-            // Handle transfer confirmation
-            document.getElementById('confirmTransfer').addEventListener('click', async function() {
-                this.disabled = true;
-                this.textContent = 'Processing...';
-
-                try {
-                    const formData = new FormData(transferForm);
-                    const response = await fetch('/transfer/process', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .content
-                        },
-                        body: JSON.stringify(Object.fromEntries(formData))
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        window.location.href = `/transfer/success/${result.data.reference_number}`;
-                    } else {
-                        throw new Error(result.message);
-                    }
-                } catch (error) {
-                    showError(error.message);
-                    this.disabled = false;
-                    this.textContent = 'Confirm Transfer';
-                }
-            });
-
-            // Helper functions
-            function validateForm() {
-                let isValid = true;
-                const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
-
-                // Validate from account
-                if (!fromAccountSelect.value) {
-                    showError('Please select a source account');
-                    isValid = false;
-                }
-
-                // Validate amount
-                const amount = parseFloat(document.querySelector('input[name="amount"]').value);
-                const selectedAccount = fromAccountSelect.options[fromAccountSelect.selectedIndex];
-                if (!amount || amount <= 0) {
-                    showError('Please enter a valid amount');
-                    isValid = false;
-                } else if (amount > parseFloat(selectedAccount.dataset.balance)) {
-                    showError('Insufficient funds');
-                    isValid = false;
-                }
-
-                if (transferType === 'internal') {
-                    if (!validatedAccount) {
-                        showError('Please validate the recipient account');
-                        isValid = false;
-                    }
-                } else {
-                    if (!bankSelect.value) {
-                        showError('Please select a bank');
-                        isValid = false;
-                    }
-
-                    // Validate bank requirements
-                    const bank = @json($banks).find(b => b.id == bankSelect.value);
-                    if (bank) {
-                        bank.requirements.forEach(req => {
-                            const field = document.querySelector(`[name="${req.name}"]`);
-                            if (req.required && !field.value) {
-                                showError(`Please fill in ${req.label}`);
-                                isValid = false;
-                            }
-                        });
-                    }
-                }
-
-                return isValid;
-            }
-
-            function updateTransferSummary() {
-                const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
-                const amount = parseFloat(document.querySelector('input[name="amount"]').value) || 0;
-                const fromAccount = fromAccountSelect.options[fromAccountSelect.selectedIndex];
-                let toAccount = '';
-
-                if (transferType === 'internal') {
-                    toAccount = validatedAccount ? validatedAccount.account_name : '-';
-                } else {
-                    const selectedBank = bankSelect.options[bankSelect.selectedIndex];
-                    toAccount = selectedBank.value ? selectedBank.text : '-';
-                }
-
-                document.getElementById('summaryFromAccount').textContent = fromAccount.value ?
-                    `${fromAccount.dataset.number}` : '-';
-                document.getElementById('summaryToAccount').textContent = toAccount;
-                document.getElementById('summaryAmount').textContent = amount ?
-                    `${fromAccount.dataset.currency}${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}` :
-                    '-';
-
-                // Show summary if we have the minimum required information
-                document.querySelector('.transfer-summary').style.display =
-                    (fromAccount.value && amount > 0) ? 'block' : 'none';
-            }
-
-            function showConfirmationModal() {
-                const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
-                const amount = parseFloat(document.querySelector('input[name="amount"]').value);
-                const fromAccount = fromAccountSelect.options[fromAccountSelect.selectedIndex];
-                const narration = document.querySelector('textarea[name="narration"]').value;
-
-                let details = `
-            <div class="alert alert-warning">
-                <p class="mb-2">Please review the transfer details:</p>
-                <ul class="mb-0">
-                    <li>From Account: ${fromAccount.dataset.number}</li>
-                    <li>Amount: ${fromAccount.dataset.currency}${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</li>
-        `;
-
-                if (transferType === 'internal') {
-                    details += `
-                <li>To Account: ${validatedAccount.account_name}</li>
-                <li>Account Number: ${document.querySelector('input[name="to_account_number"]').value}</li>
-            `;
-                } else {
-                    const selectedBank = bankSelect.options[bankSelect.selectedIndex];
-                    details += `<li>To Bank: ${selectedBank.text}</li>`;
-
-                    // Add bank requirement details
-                    const bank = @json($banks).find(b => b.id == bankSelect.value);
-                    if (bank) {
-                        bank.requirements.forEach(req => {
-                            const field = document.querySelector(`[name="${req.name}"]`);
-                            if (field.value) {
-                                details += `<li>${req.label}: ${field.value}</li>`;
-                            }
-                        });
-                    }
-                }
-
-                if (narration) {
-                    details += `<li>Narration: ${narration}</li>`;
-                }
-
-                details += `</ul></div>`;
-
-                document.querySelector('.transfer-details').innerHTML = details;
-                new bootstrap.Modal(document.getElementById('confirmationModal')).show();
-            }
-
-            function showError(message) {
-                const errorDiv = document.getElementById('transferError');
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-                setTimeout(() => {
-                    errorDiv.style.display = 'none';
-                }, 5000);
-            }
-
-            function showToast(message, type = 'info') {
-                // Implement your toast notification here
-            }
-
-            function resetBankRequirements() {
-                document.getElementById('dynamicRequirements').innerHTML = '';
-                if (bankSelect) bankSelect.value = '';
-            }
-
-            // Initialize amount input handler
-            document.querySelector('input[name="amount"]').addEventListener('input', updateTransferSummary);
-        });
-    </script> --}}
 
     <script>
         // Transfer form initialization and handling
@@ -534,6 +224,8 @@
             const accountDetails = document.getElementById('accountDetails');
             const bankSelect = document.querySelector('select[name="bank_id"]');
             const dynamicRequirements = document.getElementById('dynamicRequirements');
+            const submitTransfer = document.getElementById('submitTransfer');
+
 
             // Handle transfer type toggle
             transferTypeInputs.forEach(input => {
@@ -697,8 +389,8 @@
                             <select name="${req.name}" class="form-select" ${req.required ? 'required' : ''}>
                                 <option value="">Select ${req.label}</option>
                                 ${req.options.map(opt => `
-                                                                            <option value="${opt.value}">${opt.label}</option>
-                                                                        `).join('')}
+                                                                                                                                                            <option value="${opt.value}">${opt.label}</option>
+                                                                                                                                                        `).join('')}
                             </select>
                         `;
                                 break;
@@ -766,6 +458,40 @@
                 }
 
                 try {
+
+                    const result = await Swal.fire({
+                        title: 'Confirm Transfer',
+                        html: `
+                            <div class="text-left">
+                                <p>Are you sure you want to proceed with this transfer?</p>
+                                <ul class="list-unstyled">
+                                    <li><strong>Amount:</strong> ${formData.get('amount')}</li>
+                                    <li><strong>To:</strong> ${transferType === 'internal' ?
+                                        document.querySelector('input[name="to_account_number"]').value :
+                                        document.querySelector('select[name="bank_id"] option:checked').text
+                                    }</li>
+                                </ul>
+                            </div>
+                        `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, proceed!',
+                        cancelButtonText: 'Cancel'
+                    });
+
+                    if (!result.isConfirmed) {
+                        return;
+                    }
+
+                    // Disable submit button and show loading state
+                    submitTransfer.disabled = true;
+                    submitTransfer.innerHTML = `
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Processing Transfer...
+                    `;
+
                     const response = await fetch('/api/transfers', {
                         method: 'POST',
                         headers: {
@@ -778,24 +504,54 @@
                     const data = await response.json();
 
                     if (!response.ok) throw new Error(data.message);
-                    console.log("returned from internal trans",data.transfer.reference)
+
+                    // Show success message
+                    await Swal.fire({
+                        title: 'Transfer Initiated!',
+                        text: 'You will be redirected to the confirmation page.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
                     // Show success message and redirect to confirmation page
                     window.location.href = `/transfers/${data.transfer.reference}/confirm`;
+
                 } catch (error) {
-                    showError(error.message || 'Transfer initiation failed');
+                    // showError(error.message || 'Transfer initiation failed');
+                    // Reset button state
+                    submitTransfer.disabled = false;
+                    submitTransfer.innerHTML = 'Continue Transfer';
+
+                    // Show error message
+                    await Swal.fire({
+                        title: 'Error!',
+                        text: error.message || 'Transfer initiation failed',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 }
             });
         });
 
         // Utility functions
+        // function showError(message) {
+        //     const alertDiv = document.createElement('div');
+        //     alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+        //     alertDiv.innerHTML = `
+    //         ${message}
+    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    //     `;
+        //     document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('form'));
+        // }
+        // Utility function for showing errors
         function showError(message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
-            alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-            document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('form'));
+            Swal.fire({
+                title: 'Error!',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     </script>
 @endsection

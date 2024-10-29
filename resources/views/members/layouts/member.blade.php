@@ -10,16 +10,18 @@
     <meta content="{{ config('app.name') }}" name="author" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset("") }}users/assets/images/favicon.ico">
+    <link rel="shortcut icon" href="{{ asset('') }}users/assets/images/favicon.ico">
 
     <!-- Theme Config Js -->
-    <script src="{{ asset("") }}users/assets/js/config.js"></script>
+    <script src="{{ asset('') }}users/assets/js/config.js"></script>
 
     <!-- App css -->
-    <link href="{{ asset("") }}users/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('') }}users/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
 
     <!-- Icons css -->
-    <link href="{{ asset("") }}users/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('') }}users/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
     @yield('css')
 </head>
 
@@ -53,7 +55,8 @@
                             <div class="page-title-box">
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a href="{{ route('member.dashboard') }}">Dashboard</a></li>
+                                        <li class="breadcrumb-item"><a
+                                                href="{{ route('member.dashboard') }}">Dashboard</a></li>
                                         <li class="breadcrumb-item active">@yield('title')</li>
                                     </ol>
                                 </div>
@@ -70,7 +73,7 @@
             </div> <!-- content -->
 
             <!-- Footer Start -->
-           @include('members.layouts.partials.footer')
+            @include('members.layouts.partials.footer')
             <!-- end Footer -->
 
         </div>
@@ -83,11 +86,14 @@
     <!-- END wrapper -->
 
     <!-- Vendor js -->
-    <script src="{{ asset("") }}users/assets/js/vendor.min.js"></script>
+    <script src="{{ asset('') }}users/assets/js/vendor.min.js"></script>
 
     <!-- App js -->
-    <script src="{{ asset("") }}users/assets/js/app.min.js"></script>
-@yield('javascript')
+    <script src="{{ asset('') }}users/assets/js/app.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @yield('javascript')
 </body>
 
 </html>

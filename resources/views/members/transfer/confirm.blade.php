@@ -1,14 +1,13 @@
 @extends('members.layouts.member')
 
-@section('title', 'Confirm Transfer')
+@section('title', 'Transfer Successful')
 
 @section('member')
-<div class="container my-5">
     <div class="card border-0 shadow-sm" style="border-top: 5px solid #007bff!important;">
         <div class="card-body p-5">
             <div class="row">
                 <div class="col-md-6 col-sm-12">
-                    <img src="{{ asset('img/bank-logo.png') }}" alt="Bank Logo" height="50" class="mb-4">
+                    <img src="/users/assets/images/logo.png" alt="Bank Logo" height="50" class="mb-4">
                     <h3 class="mb-4">Transfer Receipt</h3>
                     <p class="mb-1 font-weight-bold">Transaction ID: {{ $transfer->reference }}</p>
                     <p class="mb-1">{{ $transfer->created_at->format('M d, Y') }}</p>
@@ -52,5 +51,5 @@
             </div>
         </div>
     </div>
-</div>
+
 @endsection

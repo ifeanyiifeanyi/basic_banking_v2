@@ -13,6 +13,12 @@ use Illuminate\Validation\ValidationException;
 class TransferService
 {
 
+    public $bankTransactionService;
+    public function __construct(BankTransactionService $bankTransactionService)
+    {
+        $this->bankTransactionService = $bankTransactionService;
+    }
+
     public function validateInternalAccount(string $accountNumber, int $fromAccountId): array
     {
         $account = Account::where('account_number', $accountNumber)
@@ -96,6 +102,9 @@ class TransferService
             // Validate balance
             $this->validateTransferAmount($fromAccount, $data['amount']);
 
+             // Generate reference first
+            $reference = $this->generateReference();
+
             // Create transfer record
             $transfer = Transfer::create([
                 'from_account_id' => $fromAccount->id,
@@ -104,14 +113,36 @@ class TransferService
                 'transfer_type' => 'internal',
                 'narration' => $data['narration'] ?? null,
                 'status' => 'completed',
-                'completed_at' => now()
+                'completed_at' => now(),
+                'reference' => $reference
             ]);
 
-            // Update account balances
-            $fromAccount->decrement('account_balance', $data['amount']);
-            $toAccount->increment('account_balance', $data['amount']);
+              // Create debit transaction for sender with transfer_id
+              $debitResult = $this->bankTransactionService->processTransaction($fromAccount, [
+                'amount' => $data['amount'],
+                'transaction_type' => 'debit',
+                'description' => $data['narration'] ?? "Transfer to {$toAccount->account_number}",
+                'reference_number' => $reference,
+                'transfer_id' => $transfer->id  // Pass the transfer ID
+            ]);
 
-            return $transfer->load('fromAccount', 'bank');
+            // Create credit transaction for receiver
+            $creditResult = $this->bankTransactionService->processTransaction($toAccount, [
+                'amount' => $data['amount'],
+                'transaction_type' => 'credit',
+                'description' => $data['narration'] ?? "Transfer from {$fromAccount->account_number}",
+                'reference_number' => $reference,
+                'transfer_id' => $transfer->id  // Pass the transfer ID
+            ]);
+
+
+            return $transfer->load('fromAccount');
+
+            // // Update account balances
+            // $fromAccount->decrement('account_balance', $data['amount']);
+            // $toAccount->increment('account_balance', $data['amount']);
+
+            // return $transfer->load('fromAccount', 'bank');
         });
     }
 
@@ -126,19 +157,6 @@ class TransferService
         }
         return $requirements;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

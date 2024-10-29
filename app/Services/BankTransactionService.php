@@ -20,37 +20,6 @@ class BankTransactionService
         $this->notificationService = $notificationService;
     }
 
-    // public function processTransaction(Account $account, array $data)
-    // {
-    //     DB::beginTransaction();
-
-    //     try {
-    //         $this->validateTransaction($account, $data);
-
-    //         $transaction = $this->createTransaction($account, $data);
-    //         $this->updateAccountBalance($account, $data);
-
-
-
-    //         DB::commit();
-
-    //         $this->sendTransactionNotification($account->user, $transaction);
-
-    //         return [
-    //             'success' => true,
-    //             'message' => ucfirst($data['transaction_type']) . ' processed successfully',
-    //             'transaction' => $transaction
-    //         ];
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error('Transaction failed: ' . $e->getMessage());
-
-    //         return [
-    //             'success' => false,
-    //             'message' => $e->getMessage()
-    //         ];
-    //     }
-    // }
 
     public function processTransaction(Account $account, array $data)
     {
@@ -121,14 +90,15 @@ class BankTransactionService
     private function createTransaction(Account $account, array $data)
     {
         return BankTransaction::create([
-            'reference_number' => $this->generateTransactionReference(),
-            'bank_id' => null, // null for internal transactions
+            'reference_number' => $data['reference_number'],
+            'bank_id' => $data['bank_id'] ?? null,
             'user_id' => $account->user_id,
             'account_id' => $account->id,
             'amount' => $data['amount'],
             'transaction_type' => $data['transaction_type'],
             'status' => 'completed',
             'description' => $data['description'],
+            'transfer_id' => $data['transfer_id'] ?? null,  // Handle the transfer_id
             'submitted_requirements' => json_encode([
                 'admin_initiated' => true,
                 'transaction_date' => now(),
